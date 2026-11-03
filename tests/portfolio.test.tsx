@@ -11,14 +11,33 @@ import PortfolioLandingPage from "../src/components/PortfolioLandingPage";
 import Header from "../src/components/Header";
 import { secureSiteUrl } from "../src/data/project-sites";
 
-const { setLocaleMock } = vi.hoisted(() => ({ setLocaleMock: vi.fn() }));
+const { setLocaleMock } = vi.hoisted(() => ({
+  setLocaleMock:
+    vi.fn<
+      (
+        locale: "en" | "pt-BR",
+        options?: { reload?: boolean },
+      ) => void | Promise<void>
+    >(),
+}));
 
 vi.mock("../src/paraglide/runtime.js", async (importOriginal) => ({
   ...(await importOriginal<typeof import("../src/paraglide/runtime.js")>()),
   setLocale: setLocaleMock,
 }));
 
-afterEach(cleanup);
+setLocaleMock.mockImplementation(async (locale, options) => {
+  const runtime = await vi.importActual<
+    typeof import("../src/paraglide/runtime.js")
+  >("../src/paraglide/runtime.js");
+  await runtime.setLocale(locale, { ...options, reload: false });
+});
+
+afterEach(async () => {
+  cleanup();
+  await setLocaleMock("en", { reload: false });
+  setLocaleMock.mockClear();
+});
 
 describe("portfolio landing page", () => {
   it("presents a personal profile and the three selected projects", () => {
@@ -75,16 +94,24 @@ describe("portfolio landing page", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("presents Sabores da Canastra with its repository and current maturity", () => {
+  it("presents Sabores da Canastra in Portuguese with its repository and maturity", async () => {
+    await setLocaleMock("pt-BR", { reload: false });
     render(<PortfolioLandingPage />);
 
-    expect(
-      screen.getByRole("link", { name: new RegExp(m.sabores_repo()) }),
-    ).toHaveAttribute(
+    const repoLink = screen.getByRole("link", {
+      name: /Ver projeto e implementação/,
+    });
+    expect(repoLink).toHaveAttribute(
       "href",
       "https://github.com/brunosrz/Sabores-da-Canastra",
     );
-    expect(screen.getByText(m.sabores_status())).toBeInTheDocument();
+    expect(repoLink).toHaveAttribute("target", "_blank");
+    expect(repoLink).toHaveTextContent("(abre em uma nova aba)");
+    expect(
+      screen.getByText(
+        "API disponível em preview privado. ERP e PDV seguem em desenvolvimento; os PRs dos apps ainda estão em revisão.",
+      ),
+    ).toBeInTheDocument();
   });
 
   it("opens and closes the mobile navigation with an accessible control", () => {
