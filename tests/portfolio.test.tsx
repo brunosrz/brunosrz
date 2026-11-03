@@ -56,7 +56,7 @@ describe("portfolio landing page", () => {
       screen.getByRole("heading", { name: m.delivery_title() }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("heading", { name: m.sabores_title() }),
+      screen.getByRole("heading", { name: m.erp_pos_title() }),
     ).toBeInTheDocument();
     expect(
       screen.getByRole("heading", { name: m.about_title() }),
@@ -94,23 +94,25 @@ describe("portfolio landing page", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("presents Sabores da Canastra in Portuguese with its repository and maturity", async () => {
+  it("presents the private ERP and POS case without exposing its repository", async () => {
     await setLocaleMock("pt-BR", { reload: false });
     render(<PortfolioLandingPage />);
 
-    const repoLink = screen.getByRole("link", {
-      name: /Ver projeto e implementação/,
-    });
-    expect(repoLink).toHaveAttribute(
-      "href",
-      "https://github.com/brunosrz/Sabores-da-Canastra",
-    );
-    expect(repoLink).toHaveAttribute("target", "_blank");
-    expect(repoLink).toHaveTextContent("(abre em uma nova aba)");
+    const privateCase = screen
+      .getByRole("heading", { name: m.erp_pos_title() })
+      .closest(".project-card");
+    expect(privateCase).not.toBeNull();
     expect(
-      screen.getByText(
-        "API disponível em preview privado. ERP e PDV seguem em desenvolvimento; os PRs dos apps ainda estão em revisão.",
-      ),
+      within(privateCase as HTMLElement).queryByRole("link"),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByText(/Solução privada desenvolvida com um cliente real/),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/compartilham login, tema e dados na rede local/),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/sincroniza com Cloudflare quando a conexão volta/),
     ).toBeInTheDocument();
   });
 

@@ -263,19 +263,19 @@ export default function PortfolioLandingPage() {
         </Reveal>
 
         <div className="project-grid">
-          <Reveal className="project-card sabores-card">
+          <Reveal className="project-card erp-pos-card">
             <div className="project-meta">
-              <span className="project-icon sabores-icon">
+              <span className="project-icon erp-pos-icon">
                 <PackageCheck size={20} aria-hidden="true" />
               </span>
               <span className="project-status status-neutral">
                 {m.status_in_progress()}
               </span>
             </div>
-            <p className="eyebrow">{m.sabores_eyebrow()}</p>
-            <h3>{m.sabores_title()}</h3>
-            <p className="project-body">{m.sabores_body()}</p>
-            <p className="project-detail">{m.sabores_detail()}</p>
+            <p className="eyebrow">{m.erp_pos_eyebrow()}</p>
+            <h3>{m.erp_pos_title()}</h3>
+            <p className="project-body">{m.erp_pos_body()}</p>
+            <p className="project-detail">{m.erp_pos_detail()}</p>
             <div className="feature-tags">
               <span>Hono · Cloudflare Workers</span>
               <span>D1 · R2 · Durable Objects</span>
@@ -283,19 +283,8 @@ export default function PortfolioLandingPage() {
             </div>
             <p className="project-status-note">
               <span className="status-pulse" aria-hidden="true" />
-              {m.sabores_status()}
+              {m.erp_pos_status()}
             </p>
-            <div className="project-actions project-actions-bottom">
-              <a
-                href="https://github.com/brunosrz/Sabores-da-Canastra"
-                target="_blank"
-                rel="noreferrer"
-              >
-                {m.sabores_repo()}
-                <span className="sr-only"> {m.opens_new_tab()}</span>
-                <ArrowUpRight size={16} aria-hidden="true" />
-              </a>
-            </div>
           </Reveal>
 
           {projectCards.map((project, index) => {
