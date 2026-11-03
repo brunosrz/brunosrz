@@ -37,6 +37,9 @@ describe("portfolio landing page", () => {
       screen.getByRole("heading", { name: m.delivery_title() }),
     ).toBeInTheDocument();
     expect(
+      screen.getByRole("heading", { name: m.sabores_title() }),
+    ).toBeInTheDocument();
+    expect(
       screen.getByRole("heading", { name: m.about_title() }),
     ).toBeInTheDocument();
   });
@@ -70,6 +73,18 @@ describe("portfolio landing page", () => {
         name: m.future_site(),
       }),
     ).not.toBeInTheDocument();
+  });
+
+  it("presents Sabores da Canastra with its repository and current maturity", () => {
+    render(<PortfolioLandingPage />);
+
+    expect(
+      screen.getByRole("link", { name: new RegExp(m.sabores_repo()) }),
+    ).toHaveAttribute(
+      "href",
+      "https://github.com/brunosrz/Sabores-da-Canastra",
+    );
+    expect(screen.getByText(m.sabores_status())).toBeInTheDocument();
   });
 
   it("opens and closes the mobile navigation with an accessible control", () => {
