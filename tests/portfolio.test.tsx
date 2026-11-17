@@ -11,14 +11,33 @@ import PortfolioLandingPage from "../src/components/PortfolioLandingPage";
 import Header from "../src/components/Header";
 import { secureSiteUrl } from "../src/data/project-sites";
 
-const { setLocaleMock } = vi.hoisted(() => ({ setLocaleMock: vi.fn() }));
+const { setLocaleMock } = vi.hoisted(() => ({
+  setLocaleMock:
+    vi.fn<
+      (
+        locale: "en" | "pt-BR",
+        options?: { reload?: boolean },
+      ) => void | Promise<void>
+    >(),
+}));
 
 vi.mock("../src/paraglide/runtime.js", async (importOriginal) => ({
   ...(await importOriginal<typeof import("../src/paraglide/runtime.js")>()),
   setLocale: setLocaleMock,
 }));
 
-afterEach(cleanup);
+setLocaleMock.mockImplementation(async (locale, options) => {
+  const runtime = await vi.importActual<
+    typeof import("../src/paraglide/runtime.js")
+  >("../src/paraglide/runtime.js");
+  await runtime.setLocale(locale, { ...options, reload: false });
+});
+
+afterEach(async () => {
+  cleanup();
+  await setLocaleMock("en", { reload: false });
+  setLocaleMock.mockClear();
+});
 
 describe("portfolio landing page", () => {
   it("presents a personal profile and the three selected projects", () => {
@@ -35,6 +54,9 @@ describe("portfolio landing page", () => {
     ).toBeInTheDocument();
     expect(
       screen.getByRole("heading", { name: m.delivery_title() }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: m.erp_pos_title() }),
     ).toBeInTheDocument();
     expect(
       screen.getByRole("heading", { name: m.about_title() }),
@@ -70,6 +92,28 @@ describe("portfolio landing page", () => {
         name: m.future_site(),
       }),
     ).not.toBeInTheDocument();
+  });
+
+  it("presents the private ERP and POS case without exposing its repository", async () => {
+    await setLocaleMock("pt-BR", { reload: false });
+    render(<PortfolioLandingPage />);
+
+    const privateCase = screen
+      .getByRole("heading", { name: m.erp_pos_title() })
+      .closest(".project-card");
+    expect(privateCase).not.toBeNull();
+    expect(
+      within(privateCase as HTMLElement).queryByRole("link"),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByText(/Solução privada desenvolvida com um cliente real/),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/compartilham login, tema e dados na rede local/),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/sincroniza com Cloudflare quando a conexão volta/),
+    ).toBeInTheDocument();
   });
 
   it("opens and closes the mobile navigation with an accessible control", () => {

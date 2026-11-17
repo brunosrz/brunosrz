@@ -9,6 +9,7 @@ import {
   Globe2,
   Layers3,
   Mail,
+  PackageCheck,
   ShieldCheck,
   Sparkles,
   TerminalSquare,
@@ -262,6 +263,30 @@ export default function PortfolioLandingPage() {
         </Reveal>
 
         <div className="project-grid">
+          <Reveal className="project-card erp-pos-card">
+            <div className="project-meta">
+              <span className="project-icon erp-pos-icon">
+                <PackageCheck size={20} aria-hidden="true" />
+              </span>
+              <span className="project-status status-neutral">
+                {m.status_in_progress()}
+              </span>
+            </div>
+            <p className="eyebrow">{m.erp_pos_eyebrow()}</p>
+            <h3>{m.erp_pos_title()}</h3>
+            <p className="project-body">{m.erp_pos_body()}</p>
+            <p className="project-detail">{m.erp_pos_detail()}</p>
+            <div className="feature-tags">
+              <span>Hono · Cloudflare Workers</span>
+              <span>D1 · R2 · Durable Objects</span>
+              <span>TanStack Start · PWA</span>
+            </div>
+            <p className="project-status-note">
+              <span className="status-pulse" aria-hidden="true" />
+              {m.erp_pos_status()}
+            </p>
+          </Reveal>
+
           {projectCards.map((project, index) => {
             const Icon = project.icon;
 
